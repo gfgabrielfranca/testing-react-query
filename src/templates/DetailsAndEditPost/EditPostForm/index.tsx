@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { DefaultValues, useForm } from "react-hook-form";
-import { deletePost, editPost } from "src/services/api/posts";
+import { useDeletePost, useEditPost } from "src/services/api/posts";
 
 export type FormData = {
   title: string;
@@ -21,14 +21,13 @@ export const EditPostForm = ({
 }: EditPostFormProps) => {
   const router = useRouter();
   const { register, handleSubmit } = useForm<FormData>({ defaultValues });
-  const [isEditing, setIsEditing] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const { editPost, ...editPostStatus } = useEditPost();
+  const { deletePost, ...deletePostStatus } = useDeletePost();
   const [error, setError] = useState("");
 
-  const isDisabled = isDeleting || isEditing;
+  const isDisabled = deletePostStatus.isLoading || editPostStatus.isLoading;
 
   async function handleEdit(post: FormData) {
-    setIsEditing(true);
     setError("");
 
     try {
@@ -37,12 +36,9 @@ export const EditPostForm = ({
     } catch {
       setError("Error when saving!");
     }
-
-    setIsEditing(false);
   }
 
   async function handleDelete() {
-    setIsDeleting(true);
     setError("");
 
     try {
@@ -51,8 +47,6 @@ export const EditPostForm = ({
     } catch {
       setError("Error when deleting!");
     }
-
-    setIsDeleting(false);
   }
 
   return (
@@ -80,10 +74,10 @@ export const EditPostForm = ({
           required
         />
         <button type="submit" disabled={isDisabled}>
-          {isEditing ? "Saving..." : "Save"}
+          {editPostStatus.isLoading ? "Saving..." : "Save"}
         </button>
         <button type="button" disabled={isDisabled} onClick={handleDelete}>
-          {isDeleting ? "Deleting..." : "Delete"}
+          {deletePostStatus.isLoading ? "Deleting..." : "Delete"}
         </button>
       </form>
       {!!error && <p style={{ color: "red" }}>{error}</p>}

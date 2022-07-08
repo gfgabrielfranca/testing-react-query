@@ -1,30 +1,10 @@
-import { useEffect, useState } from "react";
 import { NextPage } from "next";
-import { getPosts, IPosts } from "src/services/api/posts";
+import { usePosts } from "src/services/api/posts";
 import { CreatePostForm } from "./CreatePostForm";
 import { PostsList } from "./PostsList";
 
 export const ListAndCreatePost: NextPage = () => {
-  const [posts, setPosts] = useState<IPosts[]>();
-  const [isListLoading, setIsListLoading] = useState(true);
-  const [isListError, setIsListError] = useState(true);
-
-  async function fetchPosts() {
-    setIsListLoading(true);
-    setIsListError(false);
-
-    try {
-      const posts = await getPosts();
-      setPosts(posts);
-    } catch {
-      setIsListError(true);
-    }
-    setIsListLoading(false);
-  }
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+  const { posts, isError, isLoading, fetchPosts } = usePosts();
 
   return (
     <div>
@@ -32,8 +12,8 @@ export const ListAndCreatePost: NextPage = () => {
 
       <PostsList
         posts={posts}
-        isLoading={isListLoading}
-        isError={isListError}
+        isLoading={isLoading}
+        isError={isError}
         fetchPosts={fetchPosts}
       />
 

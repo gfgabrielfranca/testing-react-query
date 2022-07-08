@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { createPost } from "src/services/api/posts";
+import { useCreatePost } from "src/services/api/posts";
 
 export type FormData = {
   title: string;
@@ -13,22 +13,12 @@ type CreatePostFormProps = {
 
 export const CreatePostForm = ({ onCreatePost }: CreatePostFormProps) => {
   const { register, handleSubmit, reset } = useForm<FormData>();
-  const [isCreating, setIsCreating] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const { isError, isLoading, createPost } = useCreatePost();
 
   async function handleCreate(data: FormData) {
-    setIsCreating(true);
-    setIsError(false);
-
-    try {
-      await createPost(data);
-      onCreatePost();
-      reset();
-    } catch {
-      setIsError(true);
-    }
-
-    setIsCreating(false);
+    await createPost(data);
+    onCreatePost();
+    reset();
   }
 
   return (
@@ -45,18 +35,18 @@ export const CreatePostForm = ({ onCreatePost }: CreatePostFormProps) => {
         <input
           {...register("title")}
           type="text"
-          disabled={isCreating}
+          disabled={isLoading}
           placeholder="Title"
           required
         />
         <textarea
           {...register("content")}
-          disabled={isCreating}
+          disabled={isLoading}
           placeholder="Content"
           required
         />
-        <button type="submit" disabled={isCreating}>
-          {isCreating ? "Creating..." : "Create"}
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "Creating..." : "Create"}
         </button>
       </form>
       {isError && <p style={{ color: "red" }}>Error when creating!</p>}

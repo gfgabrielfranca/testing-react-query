@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
 import { NextPage } from "next";
 import Link from "next/link";
-import { IPosts, getPost } from "src/services/api/posts";
+import { usePost } from "src/services/api/posts";
 import { EditPostForm } from "./EditPostForm";
 
 export type DetailsAndEditPostProps = {
@@ -11,27 +10,7 @@ export type DetailsAndEditPostProps = {
 export const DetailsAndEditPost: NextPage<DetailsAndEditPostProps> = ({
   id,
 }) => {
-  const [post, setPost] = useState<IPosts>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(true);
-
-  const fetchPost = useCallback(async () => {
-    setIsLoading(true);
-    setIsError(false);
-
-    try {
-      const post = await getPost({ id });
-      setPost(post);
-    } catch {
-      setIsError(true);
-    }
-
-    setIsLoading(false);
-  }, [id]);
-
-  useEffect(() => {
-    fetchPost();
-  }, [fetchPost]);
+  const { isLoading, isError, fetchPost, post } = usePost({ id });
 
   if (isLoading) {
     return <h2>Loading...</h2>;
