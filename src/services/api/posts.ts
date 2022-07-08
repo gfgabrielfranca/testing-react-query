@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "react-query";
 import { client } from "./_client";
 
 export interface IPosts {
@@ -10,54 +11,17 @@ export interface IPosts {
 export type UsePostParams = Pick<IPosts, "id">;
 
 export function usePost({ id }: UsePostParams) {
-  const [post, setPost] = useState<IPosts>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(true);
-
-  const fetchPost = useCallback(async () => {
-    setIsLoading(true);
-    setIsError(false);
-
-    try {
-      const { data } = await client.get<IPosts>(`/posts/${id}`);
-      setPost(data);
-    } catch {
-      setIsError(true);
-    }
-
-    setIsLoading(false);
-  }, [id]);
-
-  useEffect(() => {
-    fetchPost();
-  }, [fetchPost]);
-
-  return { post, isLoading, isError, fetchPost };
+  return useQuery(["post", id], async () => {
+    const { data } = await client.get<IPosts>(`/posts/${id}`);
+    return data;
+  });
 }
 
 export function usePosts() {
-  const [posts, setPosts] = useState<IPosts[]>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(true);
-
-  async function fetchPosts() {
-    setIsLoading(true);
-    setIsError(false);
-
-    try {
-      const { data } = await client.get<IPosts[]>(`/posts`);
-      setPosts(data);
-    } catch {
-      setIsError(true);
-    }
-    setIsLoading(false);
-  }
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-
-  return { posts, isLoading, isError, fetchPosts };
+  return useQuery(["posts"], async () => {
+    const { data } = await client.get<IPosts[]>(`/posts`);
+    return data;
+  });
 }
 
 export type CreatePostParams = Pick<IPosts, "title" | "content">;

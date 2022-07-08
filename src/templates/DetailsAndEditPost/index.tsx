@@ -10,7 +10,7 @@ export type DetailsAndEditPostProps = {
 export const DetailsAndEditPost: NextPage<DetailsAndEditPostProps> = ({
   id,
 }) => {
-  const { isLoading, isError, fetchPost, post } = usePost({ id });
+  const { data, isLoading, isError, isFetching, refetch } = usePost({ id });
 
   if (isLoading) {
     return <h2>Loading...</h2>;
@@ -20,7 +20,7 @@ export const DetailsAndEditPost: NextPage<DetailsAndEditPostProps> = ({
     return (
       <div>
         <h3>Error in request</h3>
-        <button onClick={fetchPost}>Try Again</button>
+        <button onClick={() => refetch()}>Try Again</button>
       </div>
     );
   }
@@ -31,10 +31,14 @@ export const DetailsAndEditPost: NextPage<DetailsAndEditPostProps> = ({
         <a>Voltar para a listagem</a>
       </Link>
 
-      <h2>{post?.title}</h2>
-      <p style={{ maxWidth: 300, textAlign: "justify" }}>{post?.content}</p>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <h2>{data?.title}</h2>
+        {isFetching && <h5>loading...</h5>}
+      </div>
 
-      <EditPostForm postId={id} onEditPost={fetchPost} defaultValues={post} />
+      <p style={{ maxWidth: 300, textAlign: "justify" }}>{data?.content}</p>
+
+      <EditPostForm postId={id} onEditPost={refetch} defaultValues={data} />
     </div>
   );
 };

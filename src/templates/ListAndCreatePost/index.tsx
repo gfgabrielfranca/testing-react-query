@@ -4,20 +4,23 @@ import { CreatePostForm } from "./CreatePostForm";
 import { PostsList } from "./PostsList";
 
 export const ListAndCreatePost: NextPage = () => {
-  const { posts, isError, isLoading, fetchPosts } = usePosts();
+  const { data, isError, isLoading, isFetching, refetch } = usePosts();
 
   return (
     <div>
-      <h2>Posts</h2>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <h2>Posts</h2>
+        {!isLoading && isFetching && <h5>loading...</h5>}
+      </div>
 
       <PostsList
-        posts={posts}
+        posts={data}
         isLoading={isLoading}
         isError={isError}
-        fetchPosts={fetchPosts}
+        fetchPosts={refetch}
       />
 
-      <CreatePostForm onCreatePost={fetchPosts} />
+      <CreatePostForm onCreatePost={refetch} />
     </div>
   );
 };
