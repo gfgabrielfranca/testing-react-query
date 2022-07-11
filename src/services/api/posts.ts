@@ -7,20 +7,26 @@ export interface IPosts {
   content: string;
 }
 
+export type FetchPostParams = Pick<IPosts, "id">;
+
+export async function fetchPost({ id }: FetchPostParams) {
+  const { data } = await client.get<IPosts>(`/posts/${id}`);
+  return data;
+}
+
 export type UsePostParams = Pick<IPosts, "id">;
 
 export function usePost({ id }: UsePostParams) {
-  return useQuery(["post", id], async () => {
-    const { data } = await client.get<IPosts>(`/posts/${id}`);
-    return data;
-  });
+  return useQuery(["post", id], async () => fetchPost({ id }));
+}
+
+export async function fetchPosts() {
+  const { data } = await client.get<IPosts[]>(`/posts`);
+  return data;
 }
 
 export function usePosts() {
-  return useQuery(["posts"], async () => {
-    const { data } = await client.get<IPosts[]>(`/posts`);
-    return data;
-  });
+  return useQuery(["posts"], fetchPosts);
 }
 
 export type CreatePostParams = Pick<IPosts, "title" | "content">;

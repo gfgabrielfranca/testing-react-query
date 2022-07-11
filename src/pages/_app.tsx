@@ -1,6 +1,6 @@
 import type { AppProps } from "next/app";
 import { useState } from "react";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -8,8 +8,10 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />
-      <ReactQueryDevtools />
+      <Hydrate state={pageProps.dehydratedState}>
+        <Component {...pageProps} />
+        <ReactQueryDevtools />
+      </Hydrate>
     </QueryClientProvider>
   );
 }
