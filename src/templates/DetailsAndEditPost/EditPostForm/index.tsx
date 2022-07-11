@@ -10,43 +10,35 @@ export type FormData = {
 
 type EditPostFormProps = {
   postId: number;
-  onEditPost: () => void;
   defaultValues?: DefaultValues<FormData>;
 };
 
 export const EditPostForm = ({
-  onEditPost,
   postId: id,
   defaultValues,
 }: EditPostFormProps) => {
   const router = useRouter();
   const { register, handleSubmit } = useForm<FormData>({ defaultValues });
-  const { editPost, ...editPostStatus } = useEditPost();
-  const { deletePost, ...deletePostStatus } = useDeletePost();
+  const editPost = useEditPost({ id });
+  const deletePost = useDeletePost({ id });
   const [error, setError] = useState("");
 
-  const isDisabled = deletePostStatus.isLoading || editPostStatus.isLoading;
+  const isDisabled = deletePost.isLoading || editPost.isLoading;
 
   async function handleEdit(post: FormData) {
     setError("");
-
-    try {
-      await editPost({ id, post });
-      onEditPost();
-    } catch {
-      setError("Error when saving!");
-    }
+    editPost.mutate(post, {
+      onError: () => setError("Error when saving!"),
+    });
   }
 
   async function handleDelete() {
     setError("");
 
-    try {
-      await deletePost({ id });
-      router.push("/");
-    } catch {
-      setError("Error when deleting!");
-    }
+    deletePost.mutate(undefined, {
+      onSuccess: () => router.push("/"),
+      onError: () => setError("Error when deleting!"),
+    });
   }
 
   return (
@@ -74,10 +66,10 @@ export const EditPostForm = ({
           required
         />
         <button type="submit" disabled={isDisabled}>
-          {editPostStatus.isLoading ? "Saving..." : "Save"}
+          {editPost.isLoading ? "Saving..." : "Save"}
         </button>
         <button type="button" disabled={isDisabled} onClick={handleDelete}>
-          {deletePostStatus.isLoading ? "Deleting..." : "Delete"}
+          {deletePost.isLoading ? "Deleting..." : "Delete"}
         </button>
       </form>
       {!!error && <p style={{ color: "red" }}>{error}</p>}

@@ -20,7 +20,7 @@ export const ListAndCreatePost: NextPage = () => {
         fetchPosts={refetch}
       />
 
-      <CreatePostForm onCreatePost={refetch} />
+      <CreatePostForm />
     </div>
   );
 };

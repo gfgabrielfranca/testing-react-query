@@ -38,7 +38,7 @@ export const DetailsAndEditPost: NextPage<DetailsAndEditPostProps> = ({
 
       <p style={{ maxWidth: 300, textAlign: "justify" }}>{data?.content}</p>
 
-      <EditPostForm postId={id} onEditPost={refetch} defaultValues={data} />
+      <EditPostForm postId={id} defaultValues={data} />
     </div>
   );
 };

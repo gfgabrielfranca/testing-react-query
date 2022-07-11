@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useCreatePost } from "src/services/api/posts";
 
@@ -7,18 +6,14 @@ export type FormData = {
   content: string;
 };
 
-type CreatePostFormProps = {
-  onCreatePost: () => void;
-};
-
-export const CreatePostForm = ({ onCreatePost }: CreatePostFormProps) => {
+export const CreatePostForm = () => {
   const { register, handleSubmit, reset } = useForm<FormData>();
-  const { isError, isLoading, createPost } = useCreatePost();
+  const { isError, isLoading, mutate } = useCreatePost();
 
-  async function handleCreate(data: FormData) {
-    await createPost(data);
-    onCreatePost();
-    reset();
+  function handleCreate(data: FormData) {
+    mutate(data, {
+      onSuccess: () => reset(),
+    });
   }
 
   return (

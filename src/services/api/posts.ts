@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { client } from "./_client";
 
 export interface IPosts {
@@ -27,56 +26,47 @@ export function usePosts() {
 export type CreatePostParams = Pick<IPosts, "title" | "content">;
 
 export function useCreatePost() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const queryClient = useQueryClient();
 
-  async function createPost(post: CreatePostParams) {
-    setIsLoading(true);
-    setIsError(false);
+  return useMutation(
+    async (post: CreatePostParams) => {
+      const { data } = await client.post<IPosts[]>(`/posts`, post);
+      return data;
+    },
+    { onSuccess: () => queryClient.invalidateQueries(["posts"]) }
+  );
+}
 
-    try {
-      await client.post<IPosts[]>(`/posts`, post);
-    } catch {
-      setIsError(true);
+export type UseEditPostParams = Pick<IPosts, "id">;
+export type EditPostParams = Omit<IPosts, "id">;
+
+export function useEditPost({ id }: UseEditPostParams) {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (post: EditPostParams) => {
+      const { data } = await client.patch<IPosts[]>(`/posts/${id}`, post);
+      return data;
+    },
+    { onSuccess: () => queryClient.invalidateQueries(["post", id]) }
+  );
+}
+
+export type UseDeletePostParams = Pick<IPosts, "id">;
+
+export function useDeletePost({ id }: UseDeletePostParams) {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async () => {
+      const { data } = await client.delete<IPosts[]>(`/posts/${id}`);
+      return data;
+    },
+    {
+      onSuccess: () => {
+        queryClient.removeQueries(["post", id]);
+        return queryClient.invalidateQueries(["posts"]);
+      },
     }
-
-    setIsLoading(false);
-  }
-
-  return { isError, isLoading, createPost };
-}
-
-export type EditPostParams = {
-  id: IPosts["id"];
-  post: Omit<IPosts, "id">;
-};
-
-export function useEditPost() {
-  const [isLoading, setIsLoading] = useState(false);
-
-  async function editPost({ id, post }: EditPostParams) {
-    setIsLoading(true);
-
-    await client.patch<IPosts[]>(`/posts/${id}`, post);
-
-    setIsLoading(false);
-  }
-
-  return { isLoading, editPost };
-}
-
-export type DeletePostParams = Pick<IPosts, "id">;
-
-export function useDeletePost() {
-  const [isLoading, setIsLoading] = useState(false);
-
-  async function deletePost({ id }: DeletePostParams) {
-    setIsLoading(true);
-
-    await client.delete<IPosts[]>(`/posts/${id}`);
-
-    setIsLoading(false);
-  }
-
-  return { isLoading, deletePost };
+  );
 }
