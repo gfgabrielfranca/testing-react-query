@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { DefaultValues, useForm } from "react-hook-form";
-import { useDeletePost, useEditPost } from "src/services/api/posts";
+import { useDeletePost, useUpdatePost } from "src/services/api/posts";
 
 export type FormData = {
   title: string;
@@ -19,7 +19,7 @@ export const EditPostForm = ({
 }: EditPostFormProps) => {
   const router = useRouter();
   const { register, handleSubmit } = useForm<FormData>({ defaultValues });
-  const editPost = useEditPost({ id });
+  const editPost = useUpdatePost({ id });
   const deletePost = useDeletePost({ id });
   const [error, setError] = useState("");
 

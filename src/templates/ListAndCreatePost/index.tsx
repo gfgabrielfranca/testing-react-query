@@ -1,10 +1,10 @@
 import { NextPage } from "next";
-import { usePosts } from "src/services/api/posts";
+import { useGetPosts } from "src/services/api/posts";
 import { CreatePostForm } from "./CreatePostForm";
 import { PostsList } from "./PostsList";
 
 export const ListAndCreatePost: NextPage = () => {
-  const { data, isError, isLoading, isFetching, refetch } = usePosts();
+  const { data, isError, isLoading, isFetching, refetch } = useGetPosts();
 
   return (
     <div>

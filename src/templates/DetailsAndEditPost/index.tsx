@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import Link from "next/link";
-import { usePost } from "src/services/api/posts";
+import { useGetPost } from "src/services/api/posts";
 import { EditPostForm } from "./EditPostForm";
 
 export type DetailsAndEditPostProps = {
@@ -10,7 +10,7 @@ export type DetailsAndEditPostProps = {
 export const DetailsAndEditPost: NextPage<DetailsAndEditPostProps> = ({
   id,
 }) => {
-  const { data, isLoading, isError, isFetching, refetch } = usePost({ id });
+  const { data, isLoading, isError, isFetching, refetch } = useGetPost({ id });
 
   if (isLoading) {
     return <h2>Loading...</h2>;

@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import { dehydrate, QueryClient } from "react-query";
-import { fetchPost } from "src/services/api/posts";
+import { getPostQuery } from "src/services/api/posts";
 import {
   DetailsAndEditPostProps,
   DetailsAndEditPost,
@@ -17,9 +17,7 @@ export const getServerSideProps: GetServerSideProps<
   if (isFirstServerCall(context)) {
     const queryClient = new QueryClient();
 
-    await queryClient.prefetchQuery(["post", id], async () =>
-      fetchPost({ id })
-    );
+    await queryClient.prefetchQuery(getPostQuery({ id }));
 
     return {
       props: {
