@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { IPosts } from "src/services/api/posts";
 
-type PostsListProps = {
+export type PostsListProps = {
   isLoading: boolean;
   isError: boolean;
   posts?: IPosts[];
